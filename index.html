@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Portal</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    .login-container, .info-container { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+    .login-container { margin-top: 50px; }
+    input, button { width: 100%; padding: 10px; margin: 5px 0; }
+    button { background-color: #4CAF50; color: white; border: none; }
+    #scanner { display: none; margin-top: 20px; }
+    #preview { width: 100%; height: auto; }
+    h2, h3 { color: #333; }
+    #progress { margin-top: 20px; }
+  </style>
+  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+</head>
+<body>
+
+  <!-- Login Page -->
+  <div class="login-container" id="login-page">
+    <h2>Student Login</h2>
+    <form id="login-form">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <!-- Student Info Page (Visible After Login) -->
+  <div class="info-container" id="student-info" style="display:none;">
+    <h2>Welcome, Student!</h2>
+    <p>Your progress will be shown here.</p>
+    <div id="progress">
+      <p>Video watched: <span id="video-status">Not watched yet</span></p>
+    </div>
+
+    <h3>Scan QR Code to watch video</h3>
+    <button id="open-scanner">Open QR Scanner</button>
+    <div id="scanner">
+      <video id="preview" width="100%" height="auto"></video>
+      <button id="close-scanner">Close Scanner</button>
+    </div>
+  </div>
+
+  <script>
+    // Login Functionality
+    document.getElementById("login-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      // Hardcoded student data for demo purposes
+      if (username === "student" && password === "password123") {
+        // Hide login page and show student info page
+        document.getElementById("login-page").style.display = "none";
+        document.getElementById("student-info").style.display = "block";
+      } else {
+        alert("Invalid login credentials.");
+      }
+    });
+
+    // QR Code Scanner functionality
+    document.getElementById("open-scanner").addEventListener("click", function() {
+      document.getElementById("scanner").style.display = "block";
+      const html5QrCode = new Html5Qrcode("preview");
+
+      html5QrCode.start({ facingMode: "environment" }, {
+        fps: 10,
+        qrbox: 250
+      }, qrCodeMessage => {
+        if (qrCodeMessage) {
+          alert("QR code scanned: " + qrCodeMessage);
+          // Assuming the QR code contains a video ID or link
+          document.getElementById("video-status").innerText = "Watched";
+          html5QrCode.stop(); // Stop scanning after successful scan
+        }
+      }).catch(err => {
+        console.error("Error starting QR scanner", err);
+      });
+    });
+
+    document.getElementById("close-scanner").addEventListener("click", function() {
+      document.getElementById("scanner").style.display = "none";
+    });
+  </script>
+
+</body>
+</html>
